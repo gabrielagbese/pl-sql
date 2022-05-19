@@ -1,0 +1,156 @@
+students=["Mohammed","Ali","Sara","Mark"]
+
+for item in students:
+    r.lpush("students", item)
+    #r.set(item,"Test")
+
+#print(r.lrange("students",0, -1))
+
+
+#store all students and for each student: what subjects they finished
+#which students who finished all subjets
+    #set of students
+    #a set with a student name and all subjects inside for each student
+    #and a set of all the subjects
+
+x=" "
+while x!="0":
+    s=input("Enter student name")
+    sub=input("Enter the subject they take")
+    r.lpush(s+"_subj",sub)
+    #sara_subj is the key where sara subjects are stored
+    x=input("Enter 0 if no more ")
+    
+    
+    
+    -------------
+    def loginPage():
+    clrscr()
+    print("Welcome to our Airline Booking")
+    print("For Login enter 1")
+    print("To register enter any other key")
+    x = input()
+    if x==1:
+        user = input("enter user name")
+        password = input("enter password")
+        if r.get(user):
+            #if this is true do not proceed to next part
+        if password == r.hget("users", user):
+            showseats(user)
+        else:
+            loginPage()
+    else:
+        user = input("choose user name")
+        password = input("choose password")
+        regUser(user,password)
+
+def regUser(username, password):
+    if r.hexists("users",username)=="1":
+        print("user already exists")
+    else:
+        r.hset("users",username,password)
+        print("done!")
+    print("you can login now")
+    loginPage()
+
+
+def showseats(user):
+    x=" "
+    while(x!="exit"):
+        displayseats()
+        x = input("choose a seat to book")
+        if r.hget("seats",x)=="empty":
+            r.hset("seats",x,user)
+            print("booking done")
+        else:
+            print("the selected seat is unavailable")
+
+
+def displayseats():
+    clrscr()
+    seats = r.hgetall("seats")
+    s = ""
+    u = ""
+    for seat in seats:
+        s = s + seat + "    "
+        u= u + seats[seat] + "  "
+        print(s)
+        print(u)
+        print("---------------------")
+        print()
+
+def clrscr():
+    print("\n"*19)
+    
+    
+    -------------
+    
+    
+    * a hash of all subjects with number of students subscribed initialized to 0
+    * a hash of all subjects again, but with the value being the corresponding teacher name
+    
+    * a function for student registration takes in student name and subject name as parameter
+    	
+      *if subject name is in hash 1
+        *if the list with their name does not exist
+          *create a list called student name
+          *add subject to list
+        *else
+          *add subject to list
+        *increase value by +1
+      
+        
+        
+    	* subject + number of stuednts 0 (increment whenever a stuednt takes the subj)
+    
+    * a set of all students
+    	* each student has a list with all taken subjects (get length)
+    * a  hash of teachers
+    	
+    -----------------------------------
+    
+    import redis
+
+#  heres a teacher student and course
+#  firest get how many courses the student is studying
+#  then how many students are subscribed to the course
+#  then the teacher with more than 1 student
+#  the delete them all at the end
+
+redis_host = "17.22.216.179"
+redis_port = 6379
+redis_password = "student"
+
+
+r = redis.StrictRedis(host = redis_host, port= redis_port, decode_responses=True)
+
+def addbook(title, author, year):
+    r.sadd ("books", title)
+    r.sadd ("books", author)
+    r.sadd ("books", year)
+    
+def login(username, password):
+    r.sadd ("users", username)
+    r.sadd ("users", password)
+    
+def borrow(username, book):
+    r.sadd ("cart_" + username, book)
+    
+
+#dict of logged
+#dict of borrowed
+
+r.mset ({"logged": "", "borrowed": ""})
+if r.exists("logged"):
+    print("logged exists")
+    
+r.psetex("logged", 1000, "user")
+    
+    
+    #write a python program for a library containing books (each book has a title, author, and year of publication)
+    #users can log in with their username and password
+    #build a redis structure for the library and python functions that
+    #tell who the most recent 3 logins are
+    #for each book, tell if it is borrowed or not, and who has it
+    
+    
