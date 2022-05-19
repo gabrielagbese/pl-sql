@@ -6,6 +6,7 @@ for item in students:
 
 #print(r.lrange("students",0, -1))
 
+****************** IMPORTANT **************************
 
 #store all students and for each student: what subjects they finished
 #which students who finished all subjets
@@ -21,7 +22,7 @@ while x!="0":
     #sara_subj is the key where sara subjects are stored
     x=input("Enter 0 if no more ")
     
-    
+********************************************************
     
     -------------
     def loginPage():
@@ -84,7 +85,7 @@ def clrscr():
     
     
     -------------
-    
+    ====================== LOGIC =========================
     
     * a hash of all subjects with number of students subscribed initialized to 0
     * a hash of all subjects again, but with the value being the corresponding teacher name
@@ -107,50 +108,81 @@ def clrscr():
     	* each student has a list with all taken subjects (get length)
     * a  hash of teachers
     	
-    -----------------------------------
-    
-    import redis
-
-#  heres a teacher student and course
-#  firest get how many courses the student is studying
-#  then how many students are subscribed to the course
-#  then the teacher with more than 1 student
-#  the delete them all at the end
-
-redis_host = "17.22.216.179"
-redis_port = 6379
-redis_password = "student"
-
-
-r = redis.StrictRedis(host = redis_host, port= redis_port, decode_responses=True)
-
-def addbook(title, author, year):
-    r.sadd ("books", title)
-    r.sadd ("books", author)
-    r.sadd ("books", year)
-    
-def login(username, password):
-    r.sadd ("users", username)
-    r.sadd ("users", password)
-    
-def borrow(username, book):
-    r.sadd ("cart_" + username, book)
-    
-
-#dict of logged
-#dict of borrowed
-
-r.mset ({"logged": "", "borrowed": ""})
-if r.exists("logged"):
-    print("logged exists")
-    
-r.psetex("logged", 1000, "user")
     
     
-    #write a python program for a library containing books (each book has a title, author, and year of publication)
-    #users can log in with their username and password
-    #build a redis structure for the library and python functions that
-    #tell who the most recent 3 logins are
-    #for each book, tell if it is borrowed or not, and who has it
+    
+    -----------
+    
+    shopper login
+    
+    add items 
+
+def addspec(product_id, spec_val):
+    r.sadd("productList","product_" + product_id)
+    for spec in spec_val:
+        r.hset("product_" + product_id, spec, spec_val[spec])
+
+
+def display_prod(product_id):
+    print(r.hgetall("product_" + product_id))
+
+
+def user_login():
+    name=input("Enter Username")
+    password=input("Enter Password")
+    p=r.hget("users",name)
+    if (p==password):
+        r.set(name,password,ex=15)
+
+
+def shopping(user):
+    if r.get(user)==None:
+        user_login()
+        shopping(user)
+    else:
+        r.set(name, password, ex=15)
+        
+-----
+ library
+ 
+ 
+  def login():
+        print("Welcome to the library")
+        print("To Login enter 1")
+        print("To register enter anything else")
+        x = input()
+        if x == 1:
+            username = input("enter user name ")
+            password = input("enter password ")
+            if password == r.hget("users", username):
+                checkBooks()
+            else:
+                login()
+        else:
+            username = input("choose a new user name ")
+            password = input("choose a new password ")
+            register(user, password)
+
+    def register(username, password):
+        if r.hexists("users", username) == "1":
+            print("user already exists, try logging in again")
+            login()
+        else:
+            r.hset("users", username, password)
+            print("done!")
+        print("you can login now")
+        loginPage()
+
+    def checkBooks():
+        books = r.hgetall("books")
+        a = ""
+        b = ""
+        for book in books:
+            a = a + book + "    "
+            b = b + books[book] + "    "
+            print(a)
+            print(b)
+            print("---------------------")
+
     
     
